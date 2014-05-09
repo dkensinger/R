@@ -1,0 +1,16 @@
+{
+    "contents" : "library(Quandl)                 # Quandl package\nQuandl.auth('twVgpzZLpwNoDa4ywqRA')\nAAA <- Quandl(\"ML/AAATRI\",start_date=\"1990-01-01\",end_date=\"2012-12-31\",\n              collapse='monthly')\nTR <- Quandl(\"SANDP/MONRETS\",start_date=\"1990-01-01\",end_date=\"2012-12-31\" )\nclass(AAA)\n# [1] \"data.frame\"\nclass(AAA[,2])\n# [1] \"numeric\"\nclass(AAA[,1])\n# [1] \"Date\"\nTime <- rev(TR[,1]) \nTR <- apply(TR[-1],2,rev) \n# We now pretend as if we invested 1 dollar in 1990.\nbond <- rev(AAA[,2])/tail(AAA[,2],1) \nstock <- NULL\nfor (i in 1:NROW(TR)){\n  stock[i] <- cumsum(prod((1+TR[1:i,11])))\n}\n# Graphical Parameters:\nstockframe = data.frame(value=stock,Date=Time)\nbondframe = data.frame(value=bond,Date=Time)\nline.plot <- ggplot() +\n  geom_line(data=stockframe, aes(x=Date, y=value, colour=\"Stocks\")) +\n  geom_line(data=bondframe, aes(x=Date, y=value, colour=\"Bonds\")) +\n  scale_colour_manual(\"\", breaks = c(\"Stocks\", \"Bonds\"), values = c(\"#29779f\",\"#d8593b\")) +\n  theme(panel.background = element_rect(fill='#FFFFFF'), panel.grid.major.x = element_blank(), panel.grid.major.y = element_line(colour='#3a4047', size=0.1), panel.grid.minor = element_line(colour='#3a4047', size=0.1)) +\n  xlab(\"Date\") + ylab(\"Returns\") + ggtitle(\"Stocks and Bonds\")\nline.plot\n# We convert to time series so later we can compute yearly returns.\nAAAA <- ts(rev(AAA[,2]),start=c(1990,1),end=c(2012,1),frequency=12)\nstockk <- xts(stock,order.by=Time)\nyretb <- yearlyReturn(AAAA)\nyrets <- yearlyReturn(stockk)\nnamarg <- substr(index(yrets),1,4)\ndf = data.frame(Date=namarg, value=as.numeric(yrets)*100)\ndf2 = data.frame(Date=namarg, value=as.numeric(yretb)*100)\nbar.plot <- ggplot() +\n  geom_bar(stat='identity', data=df, aes(x=Date, y=value, fill=\"Stocks\")) +\n  geom_bar(stat='identity', data=df2, aes(x=Date, y=value, fill=\"Bonds\")) + \n  scale_fill_manual(\"\", breaks = c(\"Stocks\", \"Bonds\"), values = c(\"#29779f\",\"#d8593b\")) +\n  coord_flip() +\n  theme(panel.background = element_rect(fill='#FFFFFF'), panel.grid.major.x = element_blank(), panel.grid.major.y = element_line(colour='#3a4047', size=0.1), panel.grid.minor = element_line(colour='#3a4047', size=0.1)) +\n  xlab(\"Date\") + ylab(\"%\") + ggtitle(\"Yearly Returns\")\nbar.plot\nTT <- length(yrets)\nbondweight <- c(.2,.4,.6,.8)\nl=length(bondweight)\nstockweight <- 1-bondweight\nSharp <- m <- v <- NULL\nst = 1 # 19 = 2008\nfor (j in 1:l){\n  PortRet <- as.numeric(bondweight[j]*yretb[st:TT]) + as.numeric(stockweight[j]*yrets[st:TT])\n  # you can play around with removing bad equity years.\n  #PortRet <- as.numeric(bondweight[j]*yretb[-st]) + as.numeric(stockweight[j]*yrets[-st])\n  m[j] <- mean(PortRet)\n  v[j] <-sd(PortRet)\n  Sharp[j] <- m[j]/v[j]\n}\nSharp\n# 0.666 0.804 1.014 1.260",
+    "created" : 1399015026653.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3068753974",
+    "id" : "3F10D9F3",
+    "lastKnownWriteTime" : 1397487198,
+    "path" : "~/Documents/R programs/60_40_split.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
